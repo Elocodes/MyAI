@@ -1,8 +1,6 @@
 name: queryfunc
 channels:
         - pyviz
-packages:
-        - jupyter_panel_proxy
 dependencies:
         langchain==0.0.332
         openai==0.28.1
