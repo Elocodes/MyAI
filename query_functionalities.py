@@ -1,52 +1,20 @@
-import configAi
-#from load_embed_retrieve import load_db
-
+"""
+contains functions that enble user query the uploaded files and recieve
+correct responses. The chatbot functionality is built using panel which is a
+powerful yet simple and flexible python library for building interactive dashborads. 
+it provided the needed bind tools that bound actions with their functions
+in a clean manner in the project.
+"""
 import panel as pn
 import param
 
-#import configAi
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import Chroma
-from langchain.vectorstores import DocArrayInMemorySearch
-from langchain.document_loaders import TextLoader
-from langchain.chains import ConversationalRetrievalChain
-from langchain.memory import ConversationBufferMemory
-from langchain.chat_models import ChatOpenAI
-from langchain.document_loaders import PyPDFLoader
+from load_embed_retrieve import load_db
 
-def load_db(file, chain_type, k):
-    # load documents
-    loader = PyPDFLoader(file)
-    documents = loader.load()
-    # split documents
-    text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
-    docs = text_splitter.split_documents(documents)
-    # define embedding
-    embeddings = OpenAIEmbeddings()
-    # create vector database from data
-    persist_directory = 'docs/chroma'
-    #rm -rf ./docs/chroma  # remove old database files if any
-    vectordb = Chroma.from_documents(
-            documents=docs,
-            embedding=embeddings,
-            persist_directory=persist_directory,
-            )
-    vectordb.persist()
-    #db = DocArrayInMemorySearch.from_documents(docs, embeddings)
-    # define retriever
-    retriever = vectordb.as_retriever(search_type="mmr", search_kwargs={"k": k})
-    # create a chatbot chain. Memory is managed externally.
-    qa = ConversationalRetrievalChain.from_llm(
-        llm=ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0),
-        chain_type=chain_type,
-        retriever=retriever,
-        return_source_documents=True,
-        return_generated_question=True,
-    )
-    return qa
-
-class cbfs(param.Parameterized):
+class cb_funcs(param.Parameterized):
+    """
+    call the load function, process files into vectordb
+    create query, response function
+    """
     chat_history = param.List([])
     answer = param.String("")
     db_query  = param.String("")
@@ -55,12 +23,12 @@ class cbfs(param.Parameterized):
     def __init__(self,  **params):
         super(cbfs, self).__init__( **params)
         self.panels = []
-        self.loaded_file = "/vagrant/MyAI/Olin_MBA_essay.pdf"
+        self.loaded_file = "/path/to/file"
         self.qa = load_db(self.loaded_file,"stuff", 4)
     
     def call_load_db(self, count):
-        #file_input = pn.widgets.FileInput(accept=".pdf")
-        if count == 0 or file_input.value is None:  # init or no file specified :
+        """process user file"""
+        if count == 0 or file_input.value is None:
             return pn.pane.Markdown(f"Loaded File: {self.loaded_file}")
         else:
             file_input.save("temp.pdf")  # local copy
@@ -73,6 +41,7 @@ class cbfs(param.Parameterized):
 
     @pn.cache(per_session=True)
     def convchain(self, query):
+        """provide responses to user query"""
         if not query:
             return pn.WidgetBox(pn.Row('User:', pn.pane.Markdown("", width=600)), scroll=True)
         result = self.qa({"question": query, "chat_history": self.chat_history})
@@ -89,32 +58,12 @@ class cbfs(param.Parameterized):
             pn.Row('ChatBot:', chatbot_pane)
             ])
 
-        inp.value = ''  #clears loading indicator when cleared
+        inp.value = ''  #clears loading indicator
         return pn.WidgetBox(*self.panels, scroll=True)
-
-    @param.depends('db_query ', )
-    def get_lquest(self):
-        if not self.db_query :
-            return pn.Column(
-                pn.Row(pn.pane.Markdown(f"Last question to DB:", styles={'background-color': '#F6F6F6'})),
-                pn.Row(pn.pane.Str("no DB accesses so far"))
-            )
-        return pn.Column(
-            pn.Row(pn.pane.Markdown(f"DB query:", styles={'background-color': '#F6F6F6'})),
-            pn.pane.Str(self.db_query )
-        )
-
-    @param.depends('db_response', )
-    def get_sources(self):
-        if not self.db_response:
-            return 
-        rlist=[pn.Row(pn.pane.Markdown(f"Result of DB lookup:", styles={'background-color': '#F6F6F6'}))]
-        for doc in self.db_response:
-            rlist.append(pn.Row(pn.pane.Str(doc)))
-        return pn.WidgetBox(*rlist, width=600, scroll=True)
 
     @param.depends('convchain', 'clr_history') 
     def get_chats(self):
+        """keep tab of chat history"""
         if not self.chat_history:
             return pn.WidgetBox(pn.Row(pn.pane.Str("No History Yet")), width=600, scroll=True)
         rlist=[pn.Row(pn.pane.Markdown(f"Current Chat History variable", styles={'background-color': '#F6F6F6'}))]
@@ -123,10 +72,12 @@ class cbfs(param.Parameterized):
         return pn.WidgetBox(*rlist, width=600, scroll=True)
 
     def clr_history(self,count=0):
+        """clear chat history"""
         self.chat_history = []
         return
-    
-cb = cbfs()    
+
+# build chat interface    
+cb = cb_funcs()    
 file_input = pn.widgets.FileInput(accept='.pdf')
 button_load = pn.widgets.Button(name="Load DB", button_type='primary')
 button_clearhistory = pn.widgets.Button(name="Clear History", button_type='warning')
@@ -144,12 +95,7 @@ tab1 = pn.Column(
     pn.panel(chat,  loading_indicator=True),
     pn.layout.Divider(),
 )
-"""
-tab2= pn.Column(
-    pn.panel(cb.get_lquest),
-    pn.layout.Divider(),
-    pn.panel(cb.get_sources ),
-)"""
+
 tab2= pn.Column(
     pn.panel(cb.get_chats),
     pn.layout.Divider(),
