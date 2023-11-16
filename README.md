@@ -12,7 +12,7 @@ My project which is an app I call "MyAI" is a custom solution to one of the chal
 above. It allow users upload a pdf file and chat about this file to gain insights on it. In the
 screenshot below, I uploaded a pdf file that talks on strategies for reading research papers,
 and went on to ask questions about this file in an interactive Q&A pattern.
-![ScreenShot](MyAI/ProjectScreenshot.png)
+![](images/ProjectScreenshot.png)
 
 # Future updates
 
