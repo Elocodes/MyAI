@@ -16,8 +16,8 @@ and went on to ask questions about this file in an interactive Q&A pattern.
 
 # Future updates
 
-* Add link to deployed project website. At the moment here is a link to a youtube video where I demonstrated
-a live usage of the app. [Project Demo](https://youtu.be/A8UYSwneuS8)
+* Add link to deployed project website. At the moment here is my landing page
+which contains link to a youtube video where I demonstrated a live usage of the app. [Project Demo](Elocodes.github.io)
 
 * Improve functionality to include processing of video files
 
