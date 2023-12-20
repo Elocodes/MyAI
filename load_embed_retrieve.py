@@ -27,18 +27,14 @@ def load_db(file, chain_type, k):
     # define embedding
     embeddings = OpenAIEmbeddings()
     # create vector database from data
-    persist_directory = 'docs/chroma'
-    #rm -rf ./docs/chroma  # remove old database files if any
     vectordb = Chroma.from_documents(
             documents=docs,
             embedding=embeddings,
-            persist_directory=persist_directory,
             )
     vectordb.persist()
-    #db = DocArrayInMemorySearch.from_documents(docs, embeddings)
     # define retriever
     retriever = vectordb.as_retriever(search_type="mmr", search_kwargs={"k": k})
-    # create a chatbot chain. Memory is managed externally.
+    # create a chatbot chain
     qa = ConversationalRetrievalChain.from_llm(
         llm=ChatOpenAI(model_name='gpt-3.5-turbo', temperature=0), 
         chain_type=chain_type, 
