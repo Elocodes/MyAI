@@ -1,8 +1,8 @@
 # MyAI
 
 # Introduction
-Large language models(LLM) have revolutionalized the way we access information.
-A quick trip to ChatGPT which is a Generative Artificial Intelligence(GenAI) app built
+Large language models (LLM) have revolutionalized the way we access information.
+A quick trip to ChatGPT which is a Generative Artificial Intelligence (GenAI) app built
 on LLM produces results based on the vast data it was trained on. The question that arises
 is that of proprietary data which it was not trained on. In other words, how do you gain insights
 from a private PDF file, videos or articles that are not publicly available on the internet?
@@ -17,10 +17,10 @@ and went on to ask questions about this file in an interactive Q&A pattern.
 # Future updates
 
 * Add link to deployed project website. At the moment here is my landing page
-which contains link to a youtube video where I demonstrated a live usage of the app. [Project Demo](Elocodes.github.io)
+which contains link to a youtube video where I demonstrated a live usage of the app. [Project Demo](https://elocodes.github.io)
 
 * Improve functionality to include processing of video files
-
+  
 # Team
-I worked on this project alone. My aim was to understand the end to end process of building a full stack app
-[lets connect on linkedin](https://www.linkedin.com/in/elochukwuodoeze)   
+I worked on this project alone. My aim was to test my skills in building a full stack app.
+[Lets connect on linkedin](https://www.linkedin.com/in/elochukwuodoeze)   
